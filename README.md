@@ -19,8 +19,9 @@ The usual way to give an agent knowledge is to write it into shared documents an
 
 A droid encapsulates the knowledge of its topic. It keeps it, updates it and decides what matters. You do not have to.
 
-- **Don't know something? Ask.** `/droid-send security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
+- **Don't know something? Ask.** `/droid-call security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
 - **Need to work on the topic yourself? Load it.** `/droid-load security` in any session, and you talk to the expert directly, with all its context.
+- **Leave work for later? Send it.** `/droid-send security "Review the cookie flags"` waits in its inbox until it works next time.
 - **Your instructions stay small.** Instead of pages of rules for every topic, one line is enough: "security questions go to the security droid".
 - **Every session stays focused.** It asks the droid instead of reading everything the droid knows.
 
@@ -76,7 +77,8 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```
 
 - **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
-- **Send it something:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. The message always lands in its inbox, and the droid gets to it. You do not need to know if it is running: a running droid gets a ping, a sleeping one is woken in the background.
+- **Leave it a task for later:** `/droid-send security "Review the cookie flags"`. Like a letter: it lands in the inbox and waits until the droid works next time.
+- **Need it now? Call it:** `/droid-call security "Does the new upload endpoint need rate limiting?"`. Like a phone call: a running droid gets a ping, a sleeping one is woken in the background. You do not need to know which.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
 
 ## Skills
@@ -89,12 +91,13 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 | `/droid-load <name>` | load a droid into this session |
 | `/droid-tasks [name]` | list its inbox |
 | `/droid-work [name]` | work through the inbox |
-| `/droid-send <to> <message>` | hand a message or task to a droid, it gets done |
+| `/droid-send <to> <message>` | leave a message or task for later, like a letter |
+| `/droid-call <to> <message>` | get it done now, like a phone call: a running droid gets a ping, a sleeping one wakes up |
 | `/droid-save [name]` | fold what it learned into the wiki before you stop |
 | `/droid-lint [name]` | tidy the wiki |
 | `/droid-destroy <name>` | remove a droid |
 
-Only `/droid-send` is visible to the model. The rest run when you type them, so they cost no context in normal sessions.
+Only `/droid-send` and `/droid-call` are visible to the model. The rest run when you type them, so they cost no context in normal sessions.
 
 ## Install
 

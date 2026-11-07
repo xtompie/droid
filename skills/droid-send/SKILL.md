@@ -1,6 +1,6 @@
 ---
 name: droid-send
-description: Send a message or a task to a droid and get it done. Writes it to the droid's inbox, then pings the droid if its session is alive, or wakes it in the background if it is asleep. Use it whenever one droid or session needs another droid to do or answer something.
+description: Send a droid a message or a task for later, like a letter. Writes it to the droid's inbox only: no ping, no wake, even if the droid is running. The droid reads it next time it works. Use /droid-call instead when it is needed now.
 argument-hint: "<to> <message>"
 ---
 
@@ -19,9 +19,5 @@ Paths are relative to the project root (`git rev-parse --show-toplevel`); write 
    <message>
    ```
    `Reply-To` only when the sender is not a droid (a plain session has no inbox): the socket is `echo "$CLAUDE_CODE_MESSAGING_SOCKET"`. A droid sender leaves the line out; its inbox is the address.
-6. Read `.ai/droids/<to>/session.ini` if it exists. If `ps -p <pid>` succeeds, the droid is alive: send one SendMessage to `uds:<socket>` with only "New message in inbox: <path>". Never put the content in the ping.
-7. Otherwise the droid is asleep: wake it in the background from the project root and let it work through its inbox:
-   ```bash
-   nohup claude -p "/droid-work <to> --background" --allowedTools Read Write Edit Glob Grep SendMessage "Bash(echo:*)" "Bash(ps:*)" "Bash(ls:*)" "Bash(date:*)" "Bash(mkdir:*)" "Bash(rm:*)" > /tmp/droid-<to>.out 2>&1 &
-   ```
-8. Report in one line: the path, and whether the droid was pinged or woken.
+6. Nothing else: no ping, no wake, even if the droid is running. It reads the message next time it works (`/droid-work`, `/droid-load`) or when someone calls it with `/droid-call`.
+7. Report in one line: the path, and that it waits in the inbox.
