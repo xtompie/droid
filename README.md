@@ -1,13 +1,9 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
-  <img src="assets/logo-light.svg" alt="Droid logo" width="72">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img src="assets/banner-light.svg" alt="droid: one agent per topic. Persistent topic workers for Claude Code. Each droid keeps its own wiki and inbox in your repo.">
 </picture>
 
-# Droid
-
 **Sessions die. Droids remember.**
-
-Persistent topic workers for Claude Code. Each droid keeps its own wiki and inbox in your repo.
 
 Without droids, every new topic means a new session: you open it, load the right documents, explain where things stand, and hope it read everything. Next time you do it again.
 
