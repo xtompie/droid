@@ -5,7 +5,7 @@ argument-hint: "[name] [what it does]"
 disable-model-invocation: true
 ---
 
-Read `.ai/droids/droids.md` first.
+Read `.ai/droids/droids.md` first. Do not open other droids' folders for reference: everything you need is in this skill and in `droids.md`.
 
 1. Name and description: use the arguments if given. Otherwise infer from this conversation what it is about: a short kebab-case name (1–3 words) and one sentence for the description. The name is an ongoing responsibility, not a task.
 2. `ls .ai/droids`. If a folder with that name exists, pick another and say so.
@@ -16,8 +16,28 @@ Read `.ai/droids/droids.md` first.
      description=<one sentence>
      created=<date>
      ```
-   - `.ai/droids/<name>/droid.md`: who it is, responsible for, not responsible for, which project docs it reads. Fill it from this conversation.
-   - `.ai/droids/<name>/index.md`: `# <name>` and the wiki catalog. Knowledge already worked out in this conversation goes into wiki pages listed here (`droids.md` → "Wiki").
+   - `.ai/droids/<name>/droid.md`, filled from this conversation:
+     ```markdown
+     # <name>
+
+     <one sentence: what this droid does>
+
+     ## Responsible for
+     - <ongoing duty>
+
+     ## Not responsible for
+     - <what belongs to someone else, and who>
+
+     ## Reads
+     - <project documents it needs, if any>
+     ```
+   - `.ai/droids/<name>/index.md`, the wiki catalog:
+     ```markdown
+     # <name>
+
+     - [<page title>](<page>.md) — <one line>
+     ```
+     Knowledge already worked out in this conversation goes into wiki pages listed here (`droids.md` → "Wiki"). No pages yet → leave the list empty.
    - `mkdir -p .ai/droids/<name>/inbox`
 4. Load it: do the steps of `/droid-load <name>` (this session takes it).
 5. Say in one sentence who this droid is and what it does. From now on, act as this droid.
