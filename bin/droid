@@ -1,0 +1,208 @@
+#!/bin/sh
+# droid: deterministic file operations for droids. The skills call this; the model does the thinking.
+# Droids live next to this script: <droids-dir>/bin/droid, <droids-dir>/<name>/droid.ini.
+
+set -u
+
+DIR=$(cd "$(dirname "$0")/.." && pwd)
+
+die() { printf '%s\n' "$*" >&2; exit 1; }
+
+ini_get() { # file key
+    [ -f "$1" ] || return 0
+    grep -m1 "^$2=" "$1" | cut -d= -f2-
+}
+
+droid_dir() { # name
+    printf '%s/%s' "$DIR" "$1"
+}
+
+require_droid() { # name
+    [ -n "${1:-}" ] || die "Missing droid name."
+    [ -f "$(droid_dir "$1")/droid.ini" ] || die "No droid '$1'. See: droid status."
+}
+
+valid_name() { # name
+    printf '%s' "$1" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'
+}
+
+slugify() { # text
+    printf '%s' "$1" \
+        | sed -e 's/ą/a/g' -e 's/Ą/a/g' -e 's/ć/c/g' -e 's/Ć/c/g' -e 's/ę/e/g' -e 's/Ę/e/g' -e 's/ł/l/g' -e 's/Ł/l/g' -e 's/ń/n/g' -e 's/Ń/n/g' -e 's/ó/o/g' -e 's/Ó/o/g' -e 's/ś/s/g' -e 's/Ś/s/g' -e 's/ź/z/g' -e 's/Ź/z/g' -e 's/ż/z/g' -e 's/Ż/z/g' \
+        | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9]\{1,\}/-/g' -e 's/^-//' -e 's/-$//' | cut -c1-60
+}
+
+live_socket() { # name -> prints socket, exit 0 if the bound session is alive
+    s="$(droid_dir "$1")/session.ini"
+    [ -f "$s" ] || return 1
+    pid=$(ini_get "$s" pid)
+    sock=$(ini_get "$s" socket)
+    [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null || return 1
+    printf '%s\n' "$sock"
+}
+
+bound_here() { # name -> exit 0 if this session is the droid's session
+    s="$(droid_dir "$1")/session.ini"
+    [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || return 1
+    [ "$(ini_get "$s" session)" = "$CLAUDE_CODE_SESSION_ID" ]
+}
+
+droids() {
+    for f in "$DIR"/*/droid.ini; do
+        [ -f "$f" ] || continue
+        basename "$(dirname "$f")"
+    done
+}
+
+task_files() { # name
+    for f in "$(droid_dir "$1")"/inbox/*.md; do
+        [ -f "$f" ] && printf '%s\n' "$f"
+    done
+}
+
+cmd_status() {
+    list=$(droids)
+    [ -n "$list" ] || { echo "No droids yet. Create one with /droid-new."; return 0; }
+    printf '%-20s %-6s %-8s %s\n' "DROID" "TASKS" "SESSION" "DESCRIPTION"
+    for n in $list; do
+        c=$(task_files "$n" | wc -l | tr -d ' ')
+        if live_socket "$n" >/dev/null; then st=live; else st=asleep; fi
+        bound_here "$n" && st="here"
+        printf '%-20s %-6s %-8s %s\n' "$n" "$c" "$st" "$(ini_get "$(droid_dir "$n")/droid.ini" description)"
+    done
+}
+
+cmd_new() { # name [description]
+    n=${1:-}; desc=${2:-}
+    valid_name "$n" || die "Name must be kebab-case: lowercase letters, digits, dashes."
+    d=$(droid_dir "$n")
+    [ -e "$d" ] && die "Droid '$n' already exists."
+    mkdir -p "$d/inbox"
+    : > "$d/inbox/.gitkeep"
+    printf 'name=%s\ndescription=%s\ncreated=%s\n' "$n" "$desc" "$(date +%Y-%m-%d)" > "$d/droid.ini"
+    printf '# %s\n\n%s\n\n## Responsible for\n\n## Not responsible for\n\n## Reads\n' "$n" "$desc" > "$d/droid.md"
+    printf -- '---\ndroid: %s\ndescription: %s\n---\n\n# %s\n\n## Processes\n\n## Pages\n' "$n" "$desc" "$n" > "$d/index.md"
+    echo "$d"
+}
+
+cmd_clone() { # source name
+    src=${1:-}; n=${2:-}
+    require_droid "$src"
+    valid_name "$n" || die "Name must be kebab-case: lowercase letters, digits, dashes."
+    d=$(droid_dir "$n")
+    [ -e "$d" ] && die "Droid '$n' already exists."
+    cp -R "$(droid_dir "$src")" "$d"
+    rm -f "$d/session.ini"
+    rm -f "$d"/inbox/*.md
+    sed -i.bak -e "s/^name=.*/name=$n/" -e "s/^created=.*/created=$(date +%Y-%m-%d)/" "$d/droid.ini" && rm -f "$d/droid.ini.bak"
+    echo "$d"
+}
+
+cmd_load() { # name [--force]
+    n=${1:-}; force=${2:-}
+    require_droid "$n"
+    [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || die "Not inside a Claude Code session (CLAUDE_CODE_SESSION_ID is empty)."
+    if [ "$force" != "--force" ] && ! bound_here "$n" && live_socket "$n" >/dev/null; then
+        s="$(droid_dir "$n")/session.ini"
+        echo "busy: droid '$n' is loaded in another live session ($(ini_get "$s" session), pid $(ini_get "$s" pid))."
+        exit 3
+    fi
+    printf 'session=%s\npid=%s\nsocket=%s\n' "$CLAUDE_CODE_SESSION_ID" "${CLAUDE_PID:-}" "${CLAUDE_CODE_MESSAGING_SOCKET:-}" > "$(droid_dir "$n")/session.ini"
+    echo "This session is now droid '$n'."
+}
+
+cmd_whoami() {
+    for n in $(droids); do
+        bound_here "$n" && { echo "$n"; return 0; }
+    done
+    exit 1
+}
+
+cmd_alive() { # name
+    require_droid "${1:-}"
+    live_socket "$1" || exit 1
+}
+
+cmd_is_bound() { # name
+    require_droid "${1:-}"
+    bound_here "$1" || { echo "This session is not droid '$1'. Run /droid-load $1 first." >&2; exit 1; }
+}
+
+cmd_send() { # to from slug  (body on stdin)
+    to=${1:-}; from=${2:-}; slug=$(slugify "${3:-message}")
+    require_droid "$to"
+    [ -n "$from" ] || die "Missing sender."
+    [ -n "$slug" ] || slug=message
+    inbox="$(droid_dir "$to")/inbox"
+    mkdir -p "$inbox"
+    base="$(date +%Y%m%d-%H%M).$slug"
+    f="$inbox/$base.md"; i=2
+    while [ -e "$f" ]; do f="$inbox/$base-$i.md"; i=$((i + 1)); done
+    { printf 'From: %s\nTo: %s\n\n' "$from" "$to"; cat; } > "$f"
+    echo "$f"
+    sock=$(live_socket "$to") && [ -n "$sock" ] && echo "ping: uds:$sock"
+    return 0
+}
+
+cmd_tasks() { # name
+    require_droid "${1:-}"
+    task_files "$1"
+}
+
+cmd_destroy_check() { # name
+    require_droid "${1:-}"
+    if ! bound_here "$1" && live_socket "$1" >/dev/null; then
+        echo "live: droid '$1' is loaded in another live session."
+        exit 3
+    fi
+    d=$(droid_dir "$1")
+    if git -C "$d" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        changes=$(git -C "$d" status --porcelain --untracked-files=all -- . 2>/dev/null | grep -v 'session.ini$')
+        if [ -n "$changes" ]; then
+            echo "uncommitted: these changes would be lost:"
+            printf '%s\n' "$changes"
+            exit 4
+        fi
+    fi
+    echo "ok"
+}
+
+cmd_destroy() { # name
+    require_droid "${1:-}"
+    rm -rf "$(droid_dir "$1")"
+    echo "Droid '$1' removed. Its history stays in git."
+}
+
+usage() {
+    cat <<'EOF'
+droid status                      list droids: tasks, session, description
+droid new <name> [description]    scaffold a droid
+droid clone <source> <name>       new droid from another (role and wiki, fresh inbox)
+droid load <name> [--force]       bind this session; exit 3 if loaded in another live session
+droid whoami                      droid bound to this session, exit 1 if none
+droid alive <name>                print the live session socket, exit 1 if asleep
+droid is-bound <name>             exit 0 if this session is the droid
+droid send <to> <from> <slug>     write a message (body on stdin), print path and ping address
+droid tasks <name>                list inbox files
+droid destroy-check <name>        exit 3 if live elsewhere, 4 if uncommitted changes, else ok
+droid destroy <name>              remove the droid folder
+EOF
+}
+
+cmd=${1:-}
+[ $# -gt 0 ] && shift
+case "$cmd" in
+    status) cmd_status ;;
+    new) cmd_new "$@" ;;
+    clone) cmd_clone "$@" ;;
+    load) cmd_load "$@" ;;
+    whoami) cmd_whoami ;;
+    alive) cmd_alive "$@" ;;
+    is-bound) cmd_is_bound "$@" ;;
+    send) cmd_send "$@" ;;
+    tasks) cmd_tasks "$@" ;;
+    destroy-check) cmd_destroy_check "$@" ;;
+    destroy) cmd_destroy "$@" ;;
+    ''|-h|--help|help) usage ;;
+    *) usage >&2; exit 2 ;;
+esac

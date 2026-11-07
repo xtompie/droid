@@ -1,0 +1,57 @@
+# Installing Droid: instructions for an AI agent
+
+You are an AI coding agent in the user's project. The user asked you to install Droid. Ask one question at a time and wait for the answer. Talk in the user's language.
+
+## 1. Get the files
+
+```bash
+git clone --depth 1 https://github.com/xtompie/droid.git /tmp/droid-install
+```
+
+## 2. Ask
+
+1. **Skills for this project or for your user?**
+   - Project: skills go to `<project>/.claude/skills/`. Other people working on the repo get them too.
+   - User: skills go to `~/.claude/skills/`. Available in all your projects.
+   Droids themselves always live in the project.
+2. **Where to keep droids?** Suggest `.ai/droids`.
+3. **Name prefix?** Suggest `droid` (skills `/droid-new`, `/droid-load`, ...).
+
+## 3. Copy
+
+Let `<dir>` be the droids folder and `<prefix>` the name prefix.
+
+```bash
+mkdir -p <dir>/bin
+cp /tmp/droid-install/core/droids.md <dir>/droids.md
+cp /tmp/droid-install/bin/droid <dir>/bin/droid
+chmod +x <dir>/bin/droid
+cp -R /tmp/droid-install/skills/droid-* <skills-dir>/
+```
+
+- If `<dir>` is not `.ai/droids`, replace `.ai/droids` with `<dir>` in every copied `SKILL.md` and in `<dir>/droids.md`.
+- If `<prefix>` is not `droid`, rename each skill folder (`droid-new` → `<prefix>-new`) and replace `droid-` with `<prefix>-` in the `name:` line and in every `/droid-` mention in all copied files.
+- If skills already exist with these names, stop and ask.
+
+## 4. Wire into the project
+
+- Add `<dir>/*/session.ini` to the project `.gitignore`.
+- If the project has a router or instruction file (`AGENTS.md` or `CLAUDE.md`), add one line: droids (list, loading, messages between droids) → `<dir>/droids.md`. Do not copy the rules there.
+
+## 5. Check
+
+```bash
+<dir>/bin/droid status
+```
+
+It should print "No droids yet". Remove `/tmp/droid-install`.
+
+## 6. Explain
+
+Tell the user briefly:
+
+- In a session that works on a topic, type `/<prefix>-new`. The session becomes a droid, named from the conversation.
+- Later: `/<prefix>-load <name>` in any session. `/<prefix>-status` shows all droids.
+- Other sessions send work with `/<prefix>-send`.
+
+Ask whether to commit the installed files. Never push without being asked.
