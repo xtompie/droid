@@ -20,7 +20,7 @@ Nothing turns a session into a droid by itself.
 ```
 <droids-dir>/
   droids.md          this file
-  bin/droid          deterministic file operations used by the skills
+  .bin/droid         deterministic file operations used by the skills
   <name>/
     droid.ini        name, description, created
     droid.md         who it is: responsible for, not responsible for, which project docs it reads
@@ -36,14 +36,14 @@ Nothing turns a session into a droid by itself.
   to remember what it is working on, that is just another wiki page.
 - Content (pages, messages) is written in the language the user speaks. File names: English, kebab-case.
 - No log and no history sections. Git history is the history.
-- `bin/droid` does the mechanical parts (session binding, writing messages, status). Run `bin/droid help`.
+- `.bin/droid` does the mechanical parts (session binding, writing messages, status). Run `.bin/droid help`.
 
 ## Session
 
 - `/droid-load <name>` writes `session.ini` with the current session id, pid and messaging socket. The last load wins.
 - A resumed session gets a new pid and socket. Run `/droid-load` again in it if pings stop arriving.
 - Skills that write into a droid (`droid-work`, `droid-save`, `droid-lint`) first check that this
-  session is the droid (`bin/droid is-bound <name>`). If not, they stop and ask for `/droid-load`.
+  session is the droid (`.bin/droid is-bound <name>`). If not, they stop and ask for `/droid-load`.
 - No ownership, no locks. Two people working on one droid is a team communication matter, solved
   the same way as two people editing one module: git shows the conflict.
 

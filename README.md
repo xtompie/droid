@@ -51,8 +51,8 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```text
 .ai/droids/
   droids.md          rules for all droids
-  bin/droid          small shell script for the mechanical parts
-  api-v2/
+  .bin/droid         script the skills use, not a droid
+  api-v2/            a droid you created, for example
     droid.ini        name, description, created
     droid.md         who it is and what it is responsible for
     session.ini      the session that loaded it (not in git)
@@ -60,8 +60,6 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
     index.md         catalog of its wiki
     endpoint-inventory.md
     deprecation-plan.md
-  perf/
-    ...
 ```
 
 - **Load a droid into a session:** `/droid-load api-v2`. A session is the base layer. A droid is loaded on purpose.

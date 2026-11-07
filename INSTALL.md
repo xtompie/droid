@@ -22,10 +22,10 @@ git clone --depth 1 https://github.com/xtompie/droid.git /tmp/droid-install
 Let `<dir>` be the droids folder and `<prefix>` the name prefix.
 
 ```bash
-mkdir -p <dir>/bin
+mkdir -p <dir>/.bin
 cp /tmp/droid-install/core/droids.md <dir>/droids.md
-cp /tmp/droid-install/bin/droid <dir>/bin/droid
-chmod +x <dir>/bin/droid
+cp /tmp/droid-install/bin/droid <dir>/.bin/droid
+chmod +x <dir>/.bin/droid
 cp -R /tmp/droid-install/skills/droid-* <skills-dir>/
 ```
 
@@ -41,7 +41,7 @@ cp -R /tmp/droid-install/skills/droid-* <skills-dir>/
 ## 5. Check
 
 ```bash
-<dir>/bin/droid status
+<dir>/.bin/droid status
 ```
 
 It should print "No droids yet". Remove `/tmp/droid-install`.
