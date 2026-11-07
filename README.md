@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img src="assets/banner-light.svg" alt="droid: one agent per topic. Persistent topic workers for Claude Code. Each droid keeps its own wiki and inbox in your repo.">
+  <img src="assets/banner-light.svg" alt="droid. Persistent topic workers for Claude Code. Each droid keeps its own wiki and inbox.">
 </picture>
 
 **Sessions die. Droids remember.**
