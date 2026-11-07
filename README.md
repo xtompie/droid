@@ -3,8 +3,6 @@
   <img src="assets/banner-light.svg" alt="droid. Persistent topic workers for Claude Code. Each droid keeps its own wiki and inbox.">
 </picture>
 
-**Sessions die. Droids remember.**
-
 Without droids, every new topic means a new session: you open it, load the right documents, explain where things stand, and hope it read everything. Next time you do it again.
 
 With droids, you set up a worker once per topic. It keeps its own knowledge and context, the way a person on the team would. Work is not a shared to-do list that anyone grabs. Each droid has its own pile of tasks, because the topic is its job. You hand it work from any session. It does not matter whether the droid is running right now: the task waits in its inbox, and a sleeping droid wakes up to do it. When it is done, you get the answer, and the droid keeps what it learned for next time.
