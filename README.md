@@ -13,6 +13,19 @@ Without droids, every new topic means a new session: you open it, load the right
 
 With droids, you set up a worker once per topic. It keeps its own knowledge and context, the way a person on the team would. Work is not a shared to-do list that anyone grabs. Each droid has its own pile of tasks, because the topic is its job. You hand it work from any session. It does not matter whether the droid is running right now: the task waits in its inbox, and a sleeping droid wakes up to do it. When it is done, you get the answer, and the droid keeps what it learned for next time.
 
+## Knowledge with an owner
+
+The usual way to give an agent knowledge is to write it into shared documents and make every session read them. Then you maintain those documents forever: keep them current, keep them short, make sure the right session loads the right file.
+
+A droid encapsulates the knowledge of its topic. It keeps it, updates it and decides what matters. You do not have to.
+
+- **Don't know something? Ask.** `/droid-send security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
+- **Need to work on the topic yourself? Load it.** `/droid-load security` in any session, and you talk to the expert directly, with all its context.
+- **Your instructions stay small.** Instead of pages of rules for every topic, one line is enough: "security questions go to the security droid".
+- **Every session stays focused.** It asks the droid instead of reading everything the droid knows.
+
+It works like a team: you do not read the security handbook before every change. You ask the person who owns security.
+
 ## Why
 
 - A project grows into many topics: security, documentation, the database, tests. One router and one set of documents for everything gets heavy. Every session has to load the right files, and you have to check that it did.
