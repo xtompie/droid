@@ -7,9 +7,17 @@ disable-model-invocation: true
 
 Read `.ai/droids/droids.md` first.
 
-1. Name and description: use the arguments if given. Otherwise infer from this conversation what it is about: a short kebab-case name (1–3 words) and one sentence for the description.
-2. Run `.ai/droids/.bin/droid status`. If the name is taken, pick another and say so.
-3. Run `.ai/droids/.bin/droid new <name> "<description>"`.
-4. Fill `droid.md` (responsible for, not responsible for, which project docs it reads) from this conversation. Knowledge already worked out in this conversation goes into wiki pages and `index.md` (`droids.md` → "Wiki").
-5. Run `.ai/droids/.bin/droid load <name>`.
-6. Say in one sentence who this droid is and what it does. From now on, act as this droid.
+1. Name and description: use the arguments if given. Otherwise infer from this conversation what it is about: a short kebab-case name (1–3 words) and one sentence for the description. The name is an ongoing responsibility, not a task.
+2. `ls .ai/droids`. If a folder with that name exists, pick another and say so.
+3. `date +%Y-%m-%d` for the creation date. Create:
+   - `.ai/droids/<name>/droid.ini`:
+     ```ini
+     name=<name>
+     description=<one sentence>
+     created=<date>
+     ```
+   - `.ai/droids/<name>/droid.md`: who it is, responsible for, not responsible for, which project docs it reads. Fill it from this conversation.
+   - `.ai/droids/<name>/index.md`: `# <name>` and the wiki catalog. Knowledge already worked out in this conversation goes into wiki pages listed here (`droids.md` → "Wiki").
+   - `mkdir -p .ai/droids/<name>/inbox`
+4. Load it: do the steps of `/droid-load <name>` (this session takes it).
+5. Say in one sentence who this droid is and what it does. From now on, act as this droid.

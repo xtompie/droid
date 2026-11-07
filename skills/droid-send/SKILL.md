@@ -4,10 +4,22 @@ description: Send a message or a task to a droid and get it done. Writes it to t
 argument-hint: "<to> <message>"
 ---
 
-1. Sender: the droid of this session (`.ai/droids/.bin/droid whoami`), otherwise the person or "session".
-2. Write the message so it makes sense on its own: what is needed, why, what to send back. A reply includes the question it answers.
-3. Run `.ai/droids/.bin/droid send <to> <sender> "<short slug>"` with the message on stdin.
-4. If the output has `ping: uds:<socket>`, the droid is alive: send one SendMessage to that address with only "New message in inbox: <path>". Never put the content in the ping.
-5. Otherwise the droid is asleep: wake it in the background from the project root and let it work through its inbox:
-   `nohup claude -p "/droid-work <to> --background" --allowedTools "Bash(.ai/droids/.bin/droid:*)" Read Write Edit Glob Grep SendMessage > /tmp/droid-<to>.out 2>&1 &`
-6. Report in one line: the path, and whether the droid was pinged or woken.
+Paths are relative to the project root (`git rev-parse --show-toplevel`); write files with absolute paths.
+
+1. `.ai/droids/<to>/droid.ini` must exist. If not, say so and stop.
+2. Sender: the droid of this session (`.ai/droids/droids.md` → "Session file"), otherwise the person or "session".
+3. Write the message so it makes sense on its own: what is needed, why, what to send back. A reply includes the question it answers.
+4. File name: `date +%Y%m%d-%H%M`, then `.<slug>.md` with a short kebab-case slug. If the file exists, add `-2`, `-3`.
+5. Write `.ai/droids/<to>/inbox/<file>`:
+   ```
+   From: <sender>
+   To: <to>
+
+   <message>
+   ```
+6. Read `.ai/droids/<to>/session.ini` if it exists. If `ps -p <pid>` succeeds, the droid is alive: send one SendMessage to `uds:<socket>` with only "New message in inbox: <path>". Never put the content in the ping.
+7. Otherwise the droid is asleep: wake it in the background from the project root and let it work through its inbox:
+   ```bash
+   nohup claude -p "/droid-work <to> --background" --allowedTools Read Write Edit Glob Grep SendMessage "Bash(echo:*)" "Bash(ps:*)" "Bash(ls:*)" "Bash(date:*)" "Bash(mkdir:*)" "Bash(rm:*)" > /tmp/droid-<to>.out 2>&1 &
+   ```
+8. Report in one line: the path, and whether the droid was pinged or woken.

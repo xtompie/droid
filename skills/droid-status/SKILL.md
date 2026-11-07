@@ -4,4 +4,10 @@ description: Show all droids with their task count, session state and descriptio
 disable-model-invocation: true
 ---
 
-Run `.ai/droids/.bin/droid status` and show the result as a table. Session: `here` is this session, `live` another live session, `asleep` no live session. Add nothing else.
+For each folder in `.ai/droids/` that has a `droid.ini`:
+
+- name and `description=` from `droid.ini`,
+- tasks: number of files in `ls .ai/droids/<name>/inbox`,
+- session: read `session.ini` (`droids.md` → "Session file"). `here` if its `session=` is this session's id, `live` if `ps -p <pid>` succeeds, otherwise `asleep` (also when there is no `session.ini`).
+
+Show one table: droid, tasks, session, description. No droids → say so and mention `/droid-new`. Add nothing else.

@@ -15,7 +15,7 @@ With droids, you set up a worker once per topic. It keeps its own knowledge and 
 
 ## Why
 
-- A project grows into many topics: an API migration, performance, onboarding, documentation. One router and one set of documents for everything gets heavy. Every session has to load the right files, and you have to check that it did.
+- A project grows into many topics: security, documentation, the database, tests. One router and one set of documents for everything gets heavy. Every session has to load the right files, and you have to check that it did.
 - Reading for one topic fills the main session's context. A droid does the work in its own context, scoped to the task. You get the result, not the reading. Your main session stays clean.
 - Sessions die and get compacted. Two days later nobody remembers where the migration stopped.
 - Claude Code agent teams live only inside one session. Subagents start from zero every time. A droid is like a subagent that keeps what it learned.
@@ -38,7 +38,8 @@ A droid is a colleague with a memory. It looks after the context of its topic. Y
 
 ## What a droid is
 
-- **A folder** in your repo, for example `.ai/droids/api-v2/`.
+- **An ongoing responsibility**, not a task with an end: `security`, `docs`, `database`. A droid lives as long as its topic does.
+- **A folder** in your repo, for example `.ai/droids/security/`.
 - **A wiki** of its topic, in the [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern: an index and linked pages. New knowledge gets merged into pages, not appended.
 - **An inbox**: one file per message or task. The only fixed contract between droids.
 - **A session binding**: the session that loaded it gets pings when new mail arrives.
@@ -51,19 +52,18 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```text
 .ai/droids/
   droids.md          rules for all droids
-  .bin/droid         script the skills use, not a droid
-  api-v2/            a droid you created, for example
+  security/          a droid you created, for example
     droid.ini        name, description, created
     droid.md         who it is and what it is responsible for
     session.ini      the session that loaded it (not in git)
     inbox/           messages and tasks
     index.md         catalog of its wiki
-    endpoint-inventory.md
-    deprecation-plan.md
+    auth-rules.md
+    dependency-policy.md
 ```
 
-- **Load a droid into a session:** `/droid-load api-v2`. A session is the base layer. A droid is loaded on purpose.
-- **Send it something:** `/droid-send api-v2 "List clients still calling /v1/orders"`. The message always lands in its inbox, and the droid gets to it. You do not need to know if it is running: a running droid gets a ping, a sleeping one is woken in the background.
+- **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
+- **Send it something:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. The message always lands in its inbox, and the droid gets to it. You do not need to know if it is running: a running droid gets a ping, a sleeping one is woken in the background.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
 
 ## Skills
@@ -93,7 +93,7 @@ Install Droid from https://github.com/xtompie/droid. Follow INSTALL.md from that
 
 The agent asks where to keep droids, whether to install the skills for this project or for your user, and what to call them.
 
-Requirements: Claude Code 2.1.277 or newer, macOS or Linux, `sh`, `git`.
+Requirements: Claude Code 2.1.277 or newer, macOS or Linux, `git`.
 
 ## Credits
 

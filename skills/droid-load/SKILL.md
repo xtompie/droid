@@ -5,8 +5,15 @@ argument-hint: "<name>"
 disable-model-invocation: true
 ---
 
-1. Run `.ai/droids/.bin/droid load <name>`.
-   - Exit 3 (`busy`): the droid is loaded in another live session. Ask the user once: take it over in this session? On yes run `.ai/droids/.bin/droid load <name> --force`. On no, stop.
-2. Read `.ai/droids/droids.md`, then the droid's `droid.md` and `index.md`. Do not read all pages; open them when a task needs them.
-3. Run `.ai/droids/.bin/droid tasks <name>`.
-4. Say in two sentences who you are now and what is in the inbox. From now on, act as this droid.
+1. `.ai/droids/<name>/droid.ini` must exist. If not, say so and stop.
+2. Own values: `echo "$CLAUDE_CODE_SESSION_ID $CLAUDE_PID $CLAUDE_CODE_MESSAGING_SOCKET"`.
+3. If `.ai/droids/<name>/session.ini` exists, its `session=` is another session and `ps -p <its pid>` succeeds: the droid is loaded in another live session. Ask the user once: take it over in this session? On no, stop.
+4. Write `.ai/droids/<name>/session.ini`:
+   ```ini
+   session=<own session id>
+   pid=<own pid>
+   socket=<own socket>
+   ```
+5. Read `.ai/droids/droids.md`, then the droid's `droid.md` and `index.md`. Do not read all pages; open them when a task needs them.
+6. `ls .ai/droids/<name>/inbox`.
+7. Say in two sentences who you are now and what is in the inbox. From now on, act as this droid.
