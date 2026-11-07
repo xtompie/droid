@@ -108,6 +108,15 @@ The agent asks where to keep droids, whether to install the skills for this proj
 
 Requirements: Claude Code 2.1.277 or newer, macOS or Linux, `git`.
 
+## Tests
+
+```bash
+tests/run.sh                          # every case once, on Haiku
+tests/run.sh new --runs 3 --model sonnet
+```
+
+Each case starts a real Claude Code session (`claude -p`) in a fresh temporary project, installs the skills there with the prefix `dt` (so they do not clash with your installed `droid-*` skills), runs one command and checks the files and the answer with plain shell. They cost tokens. Cases live in `tests/cases/<id>/`: `prompt.md`, `setup.sh`, `check.sh`.
+
 ## Credits
 
 - Andrej Karpathy, [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)

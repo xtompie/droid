@@ -73,6 +73,18 @@ socket=/tmp/cc-socks/43440.sock
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
 - A reply contains the question and the answer, so it makes sense on its own. Several replies are fine ("started", "done, result here").
 - A processed message is deleted. What it changed lives in the wiki.
+- A message from a plain session (not a droid) carries `Reply-To: uds:<socket>`: a session has no inbox, so this is where answers and questions go.
+
+## Questions
+
+A droid asks whoever sent the message. The sender knows why the task exists.
+
+- Sender is a droid → `/droid-send <sender> "<question with enough context>"`.
+- Sender is a session with `Reply-To` → SendMessage to that address with the question text. This is the only ping that carries content, because a session has no inbox.
+- Task given in this droid's own interactive session → ask on screen.
+- None of these works (no `Reply-To`, dead socket) → ask on screen when interactive, otherwise leave the question in the file.
+
+In every case append `Waiting for: <question>` to the original inbox file and move on to the next item. When the answer arrives as a new message, resume the task, then delete both files.
 
 ## Wiki
 

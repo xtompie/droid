@@ -14,9 +14,11 @@ Paths are relative to the project root (`git rev-parse --show-toplevel`); write 
    ```
    From: <sender>
    To: <to>
+   Reply-To: uds:<socket>
 
    <message>
    ```
+   `Reply-To` only when the sender is not a droid (a plain session has no inbox): the socket is `echo "$CLAUDE_CODE_MESSAGING_SOCKET"`. A droid sender leaves the line out; its inbox is the address.
 6. Read `.ai/droids/<to>/session.ini` if it exists. If `ps -p <pid>` succeeds, the droid is alive: send one SendMessage to `uds:<socket>` with only "New message in inbox: <path>". Never put the content in the ping.
 7. Otherwise the droid is asleep: wake it in the background from the project root and let it work through its inbox:
    ```bash
