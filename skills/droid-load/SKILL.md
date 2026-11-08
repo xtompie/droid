@@ -6,11 +6,11 @@ disable-model-invocation: true
 ---
 
 1. `.ai/droids/<name>/droid.ini` must exist. If not, say so and stop.
-2. Own session id: `echo "$CLAUDE_CODE_SESSION_ID"`.
+2. Own session id: `${CLAUDE_SESSION_ID}`.
 3. If `.ai/droids/<name>/session.ini` exists, its `session=` is another session and the lookup (`.ai/droids/droids.md` → "Session file") finds it alive: the droid is loaded in another live session. Ask the user once: take it over in this session? On no, stop.
-4. Write `.ai/droids/<name>/session.ini` with one line, nothing else:
+4. Write `.ai/droids/<name>/session.ini` with the Write tool, one line, nothing else:
    ```ini
-   session=<own session id>
+   session=${CLAUDE_SESSION_ID}
    ```
 5. Read `.ai/droids/droids.md`, then the droid's `droid.md` and `index.md`. Do not read all pages; open them when a task needs them.
 6. `ls .ai/droids/<name>/inbox`.

@@ -49,7 +49,7 @@ It should show only `droids.md`. Remove `/tmp/droid-install`.
 Tell the user briefly:
 
 - In a session that works on a topic, type `/<prefix>-new`. The session becomes a droid, named from the conversation.
-- Later: `/<prefix>-load <name>` in any session. `/<prefix>-status` shows all droids.
-- Other sessions hand work over in two ways: `/<prefix>-send` gets it done now, waking the droid if it sleeps. `/<prefix>-queue` leaves it in the inbox for later.
+- Later: `/<prefix>-load <name>` in any session, or `claude "/<prefix>-wake <name>"` to start a sleeping droid on its inbox. `/<prefix>-status` shows all droids.
+- Other sessions hand work over in two ways: `/<prefix>-send` pings a running droid; a sleeping one gets the message in its inbox, and you get the command to start it. `/<prefix>-queue` leaves it in the inbox for later.
 
 Ask whether to commit the installed files. Never push without being asked.

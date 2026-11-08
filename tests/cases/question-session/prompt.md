@@ -1,1 +1,1 @@
-/dt-work security --background
+/dt-wake security

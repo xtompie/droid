@@ -39,5 +39,5 @@ Read `.ai/droids/droids.md` first. Do not open other droids' folders for referen
      ```
      Knowledge already worked out in this conversation goes into wiki pages listed here (`droids.md` → "Wiki"). No pages yet → leave the list empty.
    - `mkdir -p .ai/droids/<name>/inbox`
-4. Load it: do the steps of `/droid-load <name>` (this session takes it).
+4. Load it: do the steps of `/droid-load <name>` (this session takes it). This session's id is `${CLAUDE_SESSION_ID}`; write `session.ini` with the Write tool.
 5. Say in one sentence who this droid is and what it does. From now on, act as this droid.

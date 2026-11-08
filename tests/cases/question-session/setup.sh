@@ -5,10 +5,10 @@ printf '# security\n\nKeeps security knowledge.\n\n## Responsible for\n- securit
 printf '# security\n' > $d/index.md
 # A throwaway socket that stands for the asking session; never a real Claude session.
 sock="$PWD/.reply.sock"
-nohup perl -MIO::Socket::UNIX -e 'my $s = IO::Socket::UNIX->new(Type => SOCK_STREAM(), Local => shift, Listen => 1) or die; alarm 900; while (my $c = $s->accept) { close $c }' "$sock" >/dev/null 2>&1 &
+nohup perl "$PEER" "$sock" "$PWD/.reply.log" >/dev/null 2>&1 &
 pid=$!
 echo $pid > .reply.pid
 sleep 1
 id=11111111-2222-4333-8444-555555555555
-printf '{"pid":%s,"sessionId":"%s","messagingSocketPath":"%s","kind":"interactive"}\n' "$pid" "$id" "$sock" > "$DROID_SESSIONS_DIR/$pid.json"
+printf '{"pid":%s,"sessionId":"%s","messagingSocketPath":"%s","kind":"interactive"}\n' "$pid" "$id" "$sock" > "$FAKE_SESSIONS/$pid.json"
 printf 'From: session\nTo: security\nReply-To: session:%s\n\nAdd the new upload size limit to your rules.\n' "$id" > $d/inbox/20260101-0900.upload-limit.md

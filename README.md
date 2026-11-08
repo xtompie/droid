@@ -5,7 +5,7 @@
 
 Without droids, every new topic means a new session: you open it, load the right documents, explain where things stand, and hope it read everything. Next time you do it again.
 
-With droids, you set up a worker once per topic. It keeps its own knowledge and context, the way a person on the team would. Work is not a shared to-do list that anyone grabs. Each droid has its own pile of tasks, because the topic is its job. You hand it work from any session. It does not matter whether the droid is running right now: the task waits in its inbox, and a sleeping droid wakes up to do it. When it is done, you get the answer, and the droid keeps what it learned for next time.
+With droids, you set up a worker once per topic. It keeps its own knowledge and context, the way a person on the team would. Work is not a shared to-do list that anyone grabs. Each droid has its own pile of tasks, because the topic is its job. You hand it work from any session. It does not matter whether the droid is running right now: the task waits in its inbox until the droid works again. When it is done, you get the answer, and the droid keeps what it learned for next time.
 
 ## Knowledge with an owner
 
@@ -40,7 +40,7 @@ A droid is a colleague with a memory. It looks after the context of its topic. Y
 
 **A context budget.** Loading everything into one session makes it slow and confused. Hand a topic to a droid and it works in its own context window. Your session gets the answer, not the reading. Like a subagent, but it keeps what it learned.
 
-**An actor.** For programmers: a droid is an [actor](https://en.wikipedia.org/wiki/Actor_model). Private state, a mailbox, messages handled one by one. It can sleep and wake up when mail arrives.
+**An actor.** For programmers: a droid is an [actor](https://en.wikipedia.org/wiki/Actor_model). Private state, a mailbox, messages handled one by one. Mail waits while it sleeps.
 
 **A run that does not end.** [Open Mercato](https://github.com/open-mercato/open-mercato) keeps the state of one task in a run folder with a plan and a handoff. A droid is a run that outlives its task. It keeps its wiki and its inbox and takes the next job.
 
@@ -73,15 +73,16 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```
 
 - **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
-- **Need it now? Send it:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. A running droid gets a ping, a sleeping one is woken in the background. You do not need to know which.
+- **Need it now? Send it:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. A running droid gets a ping. A sleeping one gets the message in its inbox, and you get the command to start it.
 - **Leave it a task for later:** `/droid-queue security "Review the cookie flags"`. It lands in the inbox and waits until the droid works next time.
+- **Start a sleeping droid:** `claude "/droid-wake security"` in a new terminal. It loads the droid and works through its inbox.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
 
 ## How droids get messages
 
-![Send now or queue for later. Queue waits in the inbox. Send is delivered now: a running droid gets a ping, a sleeping one wakes up in the background.](assets/messaging.svg)
+![Send now or queue for later. Queue waits in the inbox. Send pings a running droid. A sleeping one gets the message in its inbox.](assets/messaging.svg)
 
-Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also delivers it now. A droid loaded in a session gets a ping and reads it between steps. A sleeping droid is woken in the background, without a tab, works through its inbox and goes back to sleep.
+Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also pings the droid. A droid loaded in a session reads it between steps. A sleeping droid gets the message in its inbox, and you get the command to start it: `claude "/droid-wake security"`. It loads the droid and works through what waits in its inbox.
 
 ## Skills
 
@@ -91,9 +92,10 @@ Both commands write the message to the droid's inbox. `/droid-queue` stops there
 | `/droid-clone <source> [name] [how it differs]` | new droid with the same role and wiki |
 | `/droid-status` | all droids: tasks, session, description |
 | `/droid-load <name>` | load a droid into this session |
+| `/droid-wake <name>` | load a droid and work through its inbox; how you start a sleeping droid |
 | `/droid-tasks [name]` | list its inbox |
 | `/droid-work [name]` | work through the inbox |
-| `/droid-send <to> <message>` | get it done now: a running droid gets a ping, a sleeping one wakes up |
+| `/droid-send <to> <message>` | send now: a running droid gets a ping; a sleeping one gets it in its inbox and you get the command to start it |
 | `/droid-queue <to> <message>` | leave a message or task for later |
 | `/droid-save [name]` | fold what it learned into the wiki before you stop |
 | `/droid-lint [name]` | tidy the wiki |
@@ -113,7 +115,7 @@ The agent asks where to keep droids, whether to install the skills for this proj
 
 Want the model to see every droid skill, not only send and queue? Copy the skills to `~/.claude/skills/` and remove the `disable-model-invocation` line. Your copy wins over the project one, only for you. It does not update with the repo, so copy it again after an update.
 
-Requirements: Claude Code 2.1.277 or newer, macOS or Linux, `git`.
+Requirements: Claude Code 2.1.310 or newer, macOS or Linux, `git`.
 
 ## Tests
 

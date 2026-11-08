@@ -23,16 +23,17 @@ done
 
 command -v claude >/dev/null 2>&1 || { echo "claude not found"; exit 2; }
 
-PATTERN='droid-\(new\|clone\|status\|load\|tasks\|work\|send\|queue\|save\|lint\|destroy\)'
+PATTERN='droid-(new|clone|status|load|wake|tasks|work|send|queue|save|lint|destroy)'
 
-install() { # project dir
+install() { # project dir, fake session registry dir
     p=$1
+    reg=$2
     mkdir -p "$p/.ai/droids" "$p/.claude/skills"
-    sed "s/$PATTERN/dt-\1/g" "$ROOT/core/droids.md" > "$p/.ai/droids/droids.md"
+    sed -E -e "s/$PATTERN/dt-\1/g" -e "s|~/.claude/sessions|$reg|g" "$ROOT/core/droids.md" > "$p/.ai/droids/droids.md"
     for d in "$ROOT"/skills/droid-*; do
         n=$(basename "$d" | sed 's/^droid-/dt-/')
         mkdir -p "$p/.claude/skills/$n"
-        sed "s/$PATTERN/dt-\1/g" "$d/SKILL.md" > "$p/.claude/skills/$n/SKILL.md"
+        sed -E -e "s/$PATTERN/dt-\1/g" -e "s|~/.claude/sessions|$reg|g" "$d/SKILL.md" > "$p/.claude/skills/$n/SKILL.md"
     done
     printf '.ai/droids/*/session.ini\n' > "$p/.gitignore"
 }
@@ -46,11 +47,13 @@ for dir in "$CASES"/*/; do
     while [ "$i" -le "$RUNS" ]; do
         p=$(mktemp -d "${TMPDIR:-/tmp}/droid-test.XXXXXX")
         (cd "$p" && git init -q)
-        install "$p"
         # A fake Claude Code session registry, so lookups never see real sessions.
-        DROID_SESSIONS_DIR="$p.sessions"
-        export DROID_SESSIONS_DIR
-        mkdir -p "$DROID_SESSIONS_DIR"
+        # The installed skills point at it instead of ~/.claude/sessions; setup.sh writes into it.
+        FAKE_SESSIONS="$p.sessions"
+        PEER="$ROOT/tests/fake-peer.pl"
+        export FAKE_SESSIONS PEER
+        mkdir -p "$FAKE_SESSIONS"
+        install "$p" "$FAKE_SESSIONS"
         [ -f "$dir/setup.sh" ] && (cd "$p" && env -u CLAUDE_CODE_MESSAGING_SOCKET -u CLAUDE_CODE_SESSION_ID -u CLAUDE_PID sh "$dir/setup.sh")
         tools=$DEFAULT_TOOLS
         [ -f "$dir/allowed-tools" ] && tools=$(cat "$dir/allowed-tools")
@@ -58,8 +61,8 @@ for dir in "$CASES"/*/; do
         # shellcheck disable=SC2086
         (cd "$p" && env -u CLAUDE_CODE_MESSAGING_SOCKET -u CLAUDE_CODE_MESSAGING_TOKEN -u CLAUDE_CODE_SESSION_ID -u CLAUDE_PID \
             perl -e 'alarm shift; exec @ARGV' "$TIMEOUT" \
-            claude -p "$(cat "$dir/prompt.md")" --model "$MODEL" --output-format stream-json --verbose \
-            --allowedTools $tools) > "$stream" 2>&1
+            claude -p "$(cat "$dir/prompt.md")" --model "$MODEL" --permission-mode default --output-format stream-json --verbose \
+            --add-dir "$FAKE_SESSIONS" --allowedTools $tools) > "$stream" 2>&1
         out="$p.out"
         perl -CS -MJSON::PP -ne 'my $j = eval { decode_json($_) } or next; print $j->{result} if ($j->{type} // "") eq "result"' "$stream" > "$out"
         cmd=$(sed -n '1s#^/\(dt-[a-z]*\).*#\1#p' "$dir/prompt.md")
@@ -74,9 +77,10 @@ for dir in "$CASES"/*/; do
             pass=$((pass + 1))
             echo "$id #$i pass"
         else
-            echo "$id #$i fail $reason"
+            echo "$id #$i fail $reason (log: $stream)"
+            stream=""
         fi
-        rm -rf "$p" "$stream" "$out" "$DROID_SESSIONS_DIR"
+        rm -rf "$p" "$out" "$FAKE_SESSIONS" ${stream:+"$stream"}
         i=$((i + 1))
     done
     need=$(( (2 * RUNS + 2) / 3 ))

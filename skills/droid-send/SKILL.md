@@ -1,13 +1,13 @@
 ---
 name: droid-send
-description: Send a droid a message or task and get it done now. Writes it to the droid's inbox, then pings the droid if its session is alive, or wakes it in the background if it is asleep. Use it when the answer or the work is needed now, and for every answer or question to a sender who waits.
+description: Send a droid a message or task now. Writes it to the droid's inbox and pings the droid if its session is running. A sleeping droid finds it in its inbox, and you get the command to start it. Use it when the answer or the work is needed now, and for every answer or question to a sender who waits.
 argument-hint: "<to> <message>"
 ---
 
 Paths are relative to the project root (`git rev-parse --show-toplevel`); write files with absolute paths.
 
 1. `.ai/droids/<to>/droid.ini` must exist. If not, say so and stop.
-2. Sender: the droid of this session (`.ai/droids/droids.md` → "Session file"), otherwise the person or "session".
+2. Sender: the droid of this session, the one whose `session.ini` has `session=${CLAUDE_SESSION_ID}` (`.ai/droids/droids.md` → "Session file"), otherwise the person or "session".
 3. Write the message so it makes sense on its own: what is needed, why, what to send back. A reply includes the question it answers.
 4. File name: `date +%Y%m%d-%H%M`, then `.<slug>.md` with a short kebab-case slug. If the file exists, add `-2`, `-3`.
 5. Write `.ai/droids/<to>/inbox/<file>`:
@@ -18,10 +18,7 @@ Paths are relative to the project root (`git rev-parse --show-toplevel`); write 
 
    <message>
    ```
-   `Reply-To` only when the sender is not a droid (a plain session has no inbox): the id is `echo "$CLAUDE_CODE_SESSION_ID"`. A droid sender leaves the line out; its inbox is the address.
-6. Read `session=` from `.ai/droids/<to>/session.ini` if it exists. That is the recipient droid's session id, not yours. Look up that id (`.ai/droids/droids.md` → "Session file"). Alive: send one SendMessage to its ping address with only "New message in inbox: <path>". Never put the content in the ping. If it succeeds, do not wake it. If it fails, the droid is asleep: go to step 7.
-7. No `session.ini`, the lookup says asleep, or the ping failed: the droid is asleep. Wake it in the background from the project root and let it work through its inbox:
-   ```bash
-   nohup claude -p "/droid-work <to> --background" --allowedTools Read Write Edit Glob Grep SendMessage "Bash(echo:*)" "Bash(ps:*)" "Bash(grep:*)" "Bash(ls:*)" "Bash(date:*)" "Bash(mkdir:*)" "Bash(rm:*)" > /tmp/droid-<to>.out 2>&1 &
-   ```
-8. Report in one line: the path, and whether the droid was pinged or woken.
+   `Reply-To` only when the sender is not a droid (a plain session has no inbox): the id is `${CLAUDE_SESSION_ID}`. A droid sender leaves the line out; its inbox is the address.
+6. Read `session=` from `.ai/droids/<to>/session.ini` if it exists. That is the recipient droid's session id, not yours. Look up that id (`.ai/droids/droids.md` → "Session file"). Alive: send one SendMessage to its ping address with only "New message in inbox: <path>". Never put the content in the ping.
+7. No `session.ini`, the lookup says asleep, or the ping failed: the droid is asleep. Start nothing. The message waits in its inbox.
+8. Report in one line: the path, and whether the droid was pinged. If it is asleep, say so and give the exact command to start it in a new terminal: `claude "/droid-wake <to>"`.

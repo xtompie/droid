@@ -3,9 +3,9 @@
 A droid is a persistent worker for one topic. Instead of making sure every session loads the right
 documents, you set up a droid that looks after its own context: it keeps its knowledge, decisions
 and notes with itself, as a small wiki. It does not expose them to others. Other sessions do not
-read its files; they write to its inbox or hand it a task. A droid works even when nobody is
-talking to it: messages wait in its inbox, and the droid can be woken in a separate session, in the
-background, or in the current one. Everything is plain files in git, so several people can work
+read its files; they write to its inbox or hand it a task. Messages wait in its inbox when nobody is
+talking to it. The droid handles them when someone wakes it (`/droid-wake`), in a separate session or the
+current one. Everything is plain files in git, so several people can work
 with droids the same way they work with code.
 
 The main session's context stays clean. Work on a topic happens in the droid's own context, scoped
@@ -51,13 +51,13 @@ session=8f3c2a10-5b7e-4c1d-9a2f-0d6e4b8a7c21
 
 Only the session id. It stays the same when a session is resumed; its process and messaging socket change. So they are never stored, they are looked up.
 
-- Own session id: `echo "$CLAUDE_CODE_SESSION_ID"`.
+- Own session id: skills get it as `${CLAUDE_SESSION_ID}`.
 - Look up a session id (is it alive, where to ping it). Claude Code keeps one compact JSON file per running session in `~/.claude/sessions/`, starting `{"pid":<n>,"sessionId":"<id>"`; checked on Claude Code 2.1.310, relying only on `pid`, `sessionId` and `messagingSocketPath`:
-  1. `grep -l '^{"pid":[0-9]*,"sessionId":"<id>"' "${DROID_SESSIONS_DIR:-$HOME/.claude/sessions}"/*.json`. Run it exactly as written, with the variable: never replace it with the default path. It matches only the top-level id, not nested ones. No file → asleep.
-  2. Several files can match (a stale one left by a crashed process). For each: `grep -o '"pid":[0-9]*' <file> | head -1` and `ps -p <pid>`.
+  1. `grep -l '^{"pid":[0-9]*,"sessionId":"<id>"' ~/.claude/sessions/*.json`. It matches only the top-level id, not nested ones. No file → asleep.
+  2. Several files can match (a stale one left by a crashed process). For each: `grep -o '^{"pid":[0-9]*' <file>` gives its pid; check it with `ps -p <pid>`.
   3. The session is alive if any matching file's pid passes `ps -p`. Its ping address is `uds:<messagingSocketPath>` from that file (`grep -o '"messagingSocketPath":"[^"]*"' <file>`). None alive → asleep.
 - A ping that fails (SendMessage returns an error) means asleep too.
-- This lookup is the only place that depends on Claude Code internals. `DROID_SESSIONS_DIR` is set only by tests; that is why the command must keep it.
+- This lookup is the only place that depends on Claude Code internals. Run each command on its own, without `;`, `&&` or `$VAR`, so it fits the user's permission rules.
 - Which droid this session is: the droid whose `session.ini` has `session=` equal to the own session id. Find it with Grep over `<droids-dir>/*/session.ini`.
 - Inbox count: `ls <droids-dir>/<name>/inbox`.
 
@@ -75,8 +75,8 @@ Only the session id. It stays the same when a session is resumed; its process an
 - A message is always a file: `inbox/YYYYMMDD-HHMM.<slug>.md`, first lines `From: <droid or person>` and `To: <droid>`, then the body.
 - The inbox is unordered. The droid picks what matters most, like a person reading mail. Its own tasks go to its inbox too.
 - Two ways to deliver, both always write the inbox file:
-  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, it is woken in the background. The ping carries no content, so a lost ping loses nothing.
-  - `/droid-queue` only queues: the file waits until the droid works next time. No ping, no wake.
+  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, nothing starts: the message waits in its inbox and the sender gets the command to start it (`claude "/droid-wake <name>"`). The ping carries no content, so a lost ping loses nothing.
+  - `/droid-queue` only queues: the file waits until the droid works next time. No ping.
 - Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
 - A reply contains the question and the answer, so it makes sense on its own. Several replies are fine ("started", "done, result here").
@@ -156,9 +156,10 @@ Then update `index.md`. If the change alters how a task is done, update its proc
 | `/droid-clone <source> [name] [how it differs]` | new droid from another: same role and wiki, fresh inbox |
 | `/droid-status` | all droids: tasks, session, description |
 | `/droid-load <name>` | load a droid into this session; also when pings stop arriving |
+| `/droid-wake <name>` | load a droid into this session and work through its inbox; the command a sleeping droid is started with |
 | `/droid-tasks [name]` | list the inbox, change nothing |
 | `/droid-work [name]` | work through the inbox |
-| `/droid-send <to> <message>` | deliver and get it done now: ping if alive, wake in the background if asleep |
+| `/droid-send <to> <message>` | deliver now: ping if alive; if asleep it waits in the inbox and you get the command to start the droid |
 | `/droid-queue <to> <message>` | leave a message or task in a droid's inbox for later |
 | `/droid-save [name]` | fold missing knowledge into the wiki, light lint |
 | `/droid-lint [name]` | full wiki lint |

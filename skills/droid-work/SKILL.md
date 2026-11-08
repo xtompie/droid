@@ -1,13 +1,11 @@
 ---
 name: droid-work
 description: Make the droid work through its inbox, one item at a time, until it is empty or the user is needed.
-argument-hint: "[name] [--background]"
+argument-hint: "[name]"
 disable-model-invocation: true
 ---
 
-Droid: the argument, or the droid of this session (`.ai/droids/droids.md` → "Session file"). Check that this session is the droid: `echo "$CLAUDE_CODE_SESSION_ID"` equals `session=` in its `session.ini`. If not, stop and tell the user to run `/droid-load <name>`.
-
-`--background` (used only when `/droid-send` wakes an asleep droid in a headless run): instead of the check, write `session.ini` with only `session=<own session id>` (`droids.md` → "Session file") unless it points to another session that the lookup finds alive (then stop), and read `droids.md`, the droid's `droid.md` and `index.md`. Never ask the user; questions go to the sender (step 4). At the end make sure the knowledge is in the wiki and `index.md` lists every page. Do not commit.
+Droid: the argument, or the droid of this session (`.ai/droids/droids.md` → "Session file"). Check that this session is the droid: `${CLAUDE_SESSION_ID}` equals `session=` in its `session.ini`. If not, stop and tell the user to run `/droid-load <name>`.
 
 Repeat:
 1. `ls .ai/droids/<name>/inbox`. Empty → say so and stop.
