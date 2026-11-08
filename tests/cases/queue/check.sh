@@ -5,6 +5,6 @@ f=$(ls $i)
 grep -q '^From:' $i/$f || { echo "no From:"; exit 1; }
 grep -q '^To: security' $i/$f || { echo "no To: security"; exit 1; }
 grep -qi 'cookie' $i/$f || { echo "task text missing"; exit 1; }
-grep -q '"name":"SendMessage"' "$3" && { echo "send must not ping"; exit 1; }
-grep -Eq 'nohup|claude -p' "$3" && { echo "send must not wake the droid"; exit 1; }
+grep -q '"name":"SendMessage"' "$3" && { echo "queue must not ping"; exit 1; }
+grep -Eq 'nohup|claude -p' "$3" && { echo "queue must not wake the droid"; exit 1; }
 exit 0

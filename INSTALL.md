@@ -50,6 +50,6 @@ Tell the user briefly:
 
 - In a session that works on a topic, type `/<prefix>-new`. The session becomes a droid, named from the conversation.
 - Later: `/<prefix>-load <name>` in any session. `/<prefix>-status` shows all droids.
-- Other sessions hand work over in two ways: `/<prefix>-send` leaves it in the inbox for later (a letter), `/<prefix>-call` gets it done now, waking the droid if it sleeps (a phone call).
+- Other sessions hand work over in two ways: `/<prefix>-send` gets it done now, waking the droid if it sleeps. `/<prefix>-queue` leaves it in the inbox for later.
 
 Ask whether to commit the installed files. Never push without being asked.

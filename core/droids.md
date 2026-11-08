@@ -70,9 +70,9 @@ socket=/tmp/cc-socks/43440.sock
 - A message is always a file: `inbox/YYYYMMDD-HHMM.<slug>.md`, first lines `From: <droid or person>` and `To: <droid>`, then the body.
 - The inbox is unordered. The droid picks what matters most, like a person reading mail. Its own tasks go to its inbox too.
 - Two ways to deliver, both always write the inbox file:
-  - `/droid-send` is a letter: the file waits until the droid works next time. No ping, no wake.
-  - `/droid-call` is a phone call: if the recipient's session is alive, it gets a ping to `uds:<socket>` ("New message in inbox: <path>"); if it is asleep, it is woken in the background. The ping carries no content, so a lost ping loses nothing.
-- Answers and questions to a sender who waits go by `/droid-call`.
+  - `/droid-send` delivers now: if the recipient's session is alive, it gets a ping to `uds:<socket>` ("New message in inbox: <path>"); if it is asleep, it is woken in the background. The ping carries no content, so a lost ping loses nothing.
+  - `/droid-queue` only queues: the file waits until the droid works next time. No ping, no wake.
+- Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
 - A reply contains the question and the answer, so it makes sense on its own. Several replies are fine ("started", "done, result here").
 - A processed message is deleted. What it changed lives in the wiki.
@@ -82,7 +82,7 @@ socket=/tmp/cc-socks/43440.sock
 
 A droid asks whoever sent the message. The sender knows why the task exists.
 
-- Sender is a droid → `/droid-call <sender> "<question with enough context>"`: the sender is waiting.
+- Sender is a droid → `/droid-send <sender> "<question with enough context>"`: the sender is waiting.
 - Sender is a session with `Reply-To` → SendMessage to that address with the question text. This is the only ping that carries content, because a session has no inbox.
 - Task given in this droid's own interactive session → ask on screen.
 - None of these works (no `Reply-To`, dead socket) → ask on screen when interactive, otherwise leave the question in the file.
@@ -152,8 +152,8 @@ Then update `index.md`. If the change alters how a task is done, update its proc
 | `/droid-load <name>` | load a droid into this session; also when pings stop arriving |
 | `/droid-tasks [name]` | list the inbox, change nothing |
 | `/droid-work [name]` | work through the inbox |
-| `/droid-send <to> <message>` | leave a message or task in a droid's inbox for later (letter) |
-| `/droid-call <to> <message>` | deliver and get it done now: ping if alive, wake in the background if asleep (phone call) |
+| `/droid-send <to> <message>` | deliver and get it done now: ping if alive, wake in the background if asleep |
+| `/droid-queue <to> <message>` | leave a message or task in a droid's inbox for later |
 | `/droid-save [name]` | fold missing knowledge into the wiki, light lint |
 | `/droid-lint [name]` | full wiki lint |
 | `/droid-destroy <name>` | remove a droid |

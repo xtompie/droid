@@ -23,7 +23,7 @@ done
 
 command -v claude >/dev/null 2>&1 || { echo "claude not found"; exit 2; }
 
-PATTERN='droid-\(new\|clone\|status\|load\|tasks\|work\|send\|save\|lint\|destroy\)'
+PATTERN='droid-\(new\|clone\|status\|load\|tasks\|work\|send\|queue\|save\|lint\|destroy\)'
 
 install() { # project dir
     p=$1

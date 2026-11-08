@@ -13,9 +13,9 @@ The usual way to give an agent knowledge is to write it into shared documents an
 
 A droid encapsulates the knowledge of its topic. It keeps it, updates it and decides what matters. You do not have to.
 
-- **Don't know something? Ask.** `/droid-call security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
+- **Don't know something? Ask.** `/droid-send security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
 - **Need to work on the topic yourself? Load it.** `/droid-load security` in any session, and you talk to the expert directly, with all its context.
-- **Leave work for later? Send it.** `/droid-send security "Review the cookie flags"` waits in its inbox until it works next time.
+- **Leave work for later? Queue it.** `/droid-queue security "Review the cookie flags"` waits in its inbox until it works next time.
 - **Your instructions stay small.** Instead of pages of rules for every topic, one line is enough: "security questions go to the security droid".
 - **Every session stays focused.** It asks the droid instead of reading everything the droid knows.
 
@@ -71,9 +71,15 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```
 
 - **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
-- **Leave it a task for later:** `/droid-send security "Review the cookie flags"`. Like a letter: it lands in the inbox and waits until the droid works next time.
-- **Need it now? Call it:** `/droid-call security "Does the new upload endpoint need rate limiting?"`. Like a phone call: a running droid gets a ping, a sleeping one is woken in the background. You do not need to know which.
+- **Need it now? Send it:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. A running droid gets a ping, a sleeping one is woken in the background. You do not need to know which.
+- **Leave it a task for later:** `/droid-queue security "Review the cookie flags"`. It lands in the inbox and waits until the droid works next time.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
+
+## How droids get messages
+
+![Queue waits in the inbox. Send is delivered now: a running droid gets a ping, a sleeping one wakes up in the background.](assets/messaging.svg)
+
+Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also delivers it now. A droid loaded in a session gets a ping and reads it between steps. A sleeping droid is woken in the background, without a tab, works through its inbox and goes back to sleep.
 
 ## Skills
 
@@ -85,13 +91,13 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 | `/droid-load <name>` | load a droid into this session |
 | `/droid-tasks [name]` | list its inbox |
 | `/droid-work [name]` | work through the inbox |
-| `/droid-send <to> <message>` | leave a message or task for later, like a letter |
-| `/droid-call <to> <message>` | get it done now, like a phone call: a running droid gets a ping, a sleeping one wakes up |
+| `/droid-send <to> <message>` | get it done now: a running droid gets a ping, a sleeping one wakes up |
+| `/droid-queue <to> <message>` | leave a message or task for later |
 | `/droid-save [name]` | fold what it learned into the wiki before you stop |
 | `/droid-lint [name]` | tidy the wiki |
 | `/droid-destroy <name>` | remove a droid |
 
-Only `/droid-send` and `/droid-call` are visible to the model. The rest run when you type them, so they cost no context in normal sessions.
+Only `/droid-send` and `/droid-queue` are visible to the model. The rest run when you type them, so they cost no context in normal sessions.
 
 ## Install
 
