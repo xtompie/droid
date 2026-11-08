@@ -10,9 +10,9 @@ git clone --depth 1 https://github.com/xtompie/droid.git /tmp/droid-install
 
 ## 2. Ask
 
-1. **Skills for this project or for your user?**
-   - Project: skills go to `<project>/.claude/skills/`. Other people working on the repo get them too.
-   - User: skills go to `~/.claude/skills/`. Available in all your projects.
+1. **Skills for this project or for your user?** Recommend project.
+   - Project (recommended): skills go to `<project>/.claude/skills/`. Anyone who clones the repo gets them, so the droids folder makes sense to them.
+   - User: skills go to `~/.claude/skills/`. Available in all your projects. User skills win over project skills with the same name, and they do not update when the repo does.
    Droids themselves always live in the project.
 2. **Where to keep droids?** Suggest `.ai/droids`.
 3. **Name prefix?** Suggest `droid` (skills `/droid-new`, `/droid-load`, ...).

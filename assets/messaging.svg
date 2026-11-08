@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 78 1280 612" width="1280" height="612" role="img" aria-label="How droids get messages: queue waits in the inbox, send is delivered now, to a running or a sleeping droid">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 704" width="1280" height="704" role="img" aria-label="Send now or queue for later. Queue waits in the inbox. Send is delivered now: a running droid gets a ping, a sleeping one wakes up.">
 <defs>
 <marker id="g" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#e3a92b"/></marker>
 <style>
@@ -20,6 +20,7 @@ text { font-family: JBM, ui-monospace, monospace; font-size: 13px; }
 </defs>
 
 <rect width="1280" height="740" fill="#0a0907"/>
+<rect x="30.0" y="26.8" width="51.2" height="3.2" fill="#e3a92b"/><rect x="30.0" y="68.4" width="51.2" height="3.2" fill="#e3a92b"/><rect x="30.0" y="26.8" width="3.2" height="44.8" fill="#e3a92b"/><rect x="78.0" y="26.8" width="3.2" height="44.8" fill="#e3a92b"/><rect x="54.0" y="20.4" width="3.2" height="6.4" fill="#b8862a"/><rect x="51.6" y="14.0" width="8.0" height="6.4" fill="#f3ead8"/><rect x="41.2" y="39.6" width="8.0" height="6.4" fill="#e3a92b"/><rect x="62.0" y="39.6" width="8.0" height="6.4" fill="#e3a92b"/><rect x="41.2" y="57.2" width="28.8" height="4.0" fill="#b8862a"/><text x="104" y="60" style="font-size:24px" fill="#f3ead8">Send now or queue for later.</text>
 
 <text x="620.0" y="118" class="axis" fill="#cfc6b4" text-anchor="middle">QUEUE · WAITS IN THE INBOX</text>
 <text x="1050.0" y="118" class="axis" fill="#cfc6b4" text-anchor="middle">SEND · DELIVERED NOW</text>

@@ -13,6 +13,8 @@ The usual way to give an agent knowledge is to write it into shared documents an
 
 A droid encapsulates the knowledge of its topic. It keeps it, updates it and decides what matters. You do not have to.
 
+![Delegate the topic to a specialist. Its docs are its job. Without droids every session searches all shared docs and you pick what to read, every time. A droid searches only its own pages, writes down the answer and reads it the next time.](assets/owner.svg)
+
 - **Don't know something? Ask.** `/droid-send security "Does the new upload endpoint need rate limiting?"` The droid answers from what it knows, and learns from the question.
 - **Need to work on the topic yourself? Load it.** `/droid-load security` in any session, and you talk to the expert directly, with all its context.
 - **Leave work for later? Queue it.** `/droid-queue security "Review the cookie flags"` waits in its inbox until it works next time.
@@ -77,7 +79,7 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 
 ## How droids get messages
 
-![Queue waits in the inbox. Send is delivered now: a running droid gets a ping, a sleeping one wakes up in the background.](assets/messaging.svg)
+![Send now or queue for later. Queue waits in the inbox. Send is delivered now: a running droid gets a ping, a sleeping one wakes up in the background.](assets/messaging.svg)
 
 Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also delivers it now. A droid loaded in a session gets a ping and reads it between steps. A sleeping droid is woken in the background, without a tab, works through its inbox and goes back to sleep.
 
@@ -107,7 +109,9 @@ Paste this into Claude Code in your project:
 Install Droid from https://github.com/xtompie/droid. Follow INSTALL.md from that repo.
 ```
 
-The agent asks where to keep droids, whether to install the skills for this project or for your user, and what to call them.
+The agent asks where to keep droids, whether to install the skills for this project or for your user, and what to call them. Install them in the project: anyone who clones the repo gets the skills, and the droids folder makes sense to them.
+
+Want the model to see every droid skill, not only send and queue? Copy the skills to `~/.claude/skills/` and remove the `disable-model-invocation` line. Your copy wins over the project one, only for you. It does not update with the repo, so copy it again after an update.
 
 Requirements: Claude Code 2.1.277 or newer, macOS or Linux, `git`.
 
