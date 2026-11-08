@@ -10,7 +10,7 @@ RUNS=1
 MODEL=haiku
 ONLY=""
 TIMEOUT=600
-DEFAULT_TOOLS='Read Write Edit Glob Grep SendMessage Bash(ps:*) Bash(echo:*) Bash(ls:*) Bash(date:*) Bash(mkdir:*) Bash(rm:*) Bash(git rev-parse:*)'
+DEFAULT_TOOLS='Read Write Edit Glob Grep SendMessage Bash(ps:*) Bash(grep:*) Bash(echo:*) Bash(ls:*) Bash(date:*) Bash(mkdir:*) Bash(rm:*) Bash(git rev-parse:*)'
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -47,6 +47,10 @@ for dir in "$CASES"/*/; do
         p=$(mktemp -d "${TMPDIR:-/tmp}/droid-test.XXXXXX")
         (cd "$p" && git init -q)
         install "$p"
+        # A fake Claude Code session registry, so lookups never see real sessions.
+        DROID_SESSIONS_DIR="$p.sessions"
+        export DROID_SESSIONS_DIR
+        mkdir -p "$DROID_SESSIONS_DIR"
         [ -f "$dir/setup.sh" ] && (cd "$p" && env -u CLAUDE_CODE_MESSAGING_SOCKET -u CLAUDE_CODE_SESSION_ID -u CLAUDE_PID sh "$dir/setup.sh")
         tools=$DEFAULT_TOOLS
         [ -f "$dir/allowed-tools" ] && tools=$(cat "$dir/allowed-tools")
@@ -72,7 +76,7 @@ for dir in "$CASES"/*/; do
         else
             echo "$id #$i fail $reason"
         fi
-        rm -rf "$p" "$stream" "$out"
+        rm -rf "$p" "$stream" "$out" "$DROID_SESSIONS_DIR"
         i=$((i + 1))
     done
     need=$(( (2 * RUNS + 2) / 3 ))

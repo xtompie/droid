@@ -6,5 +6,5 @@ echo "$f" | grep -Eq '^[0-9]{8}-[0-9]{4}\.[a-z0-9]+(-[a-z0-9]+)*\.md$' || { echo
 grep -q '^From:' $i/$f || { echo "no From:"; exit 1; }
 grep -q '^To: security' $i/$f || { echo "no To: security"; exit 1; }
 grep -qi 'rate limit' $i/$f || { echo "question missing"; exit 1; }
-grep -q '^Reply-To: uds:' $i/$f || { echo "no Reply-To from a plain session"; exit 1; }
+grep -q '^Reply-To: session:' $i/$f || { echo "no Reply-To from a plain session"; exit 1; }
 exit 0

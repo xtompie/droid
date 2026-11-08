@@ -26,7 +26,7 @@ All paths are relative to the project root. Before writing a file, resolve it to
   <name>/
     droid.ini        name, description, created
     droid.md         who it is: responsible for, not responsible for, which project docs it reads
-    session.ini      session, pid, socket of the session that loaded it (not in git)
+    session.ini      id of the session that loaded it (not in git)
     inbox/           one message or task per file
     index.md         catalog of its wiki pages
     sources.md       optional: where to look when researching its topic
@@ -47,19 +47,24 @@ All paths are relative to the project root. Before writing a file, resolve it to
 
 ```ini
 session=8f3c2a10-5b7e-4c1d-9a2f-0d6e4b8a7c21
-pid=43440
-socket=/tmp/cc-socks/43440.sock
 ```
 
-- Own values: `echo "$CLAUDE_CODE_SESSION_ID $CLAUDE_PID $CLAUDE_CODE_MESSAGING_SOCKET"`.
-- Is that session alive: `ps -p <pid>` (exit code 0 = alive).
+Only the session id. It stays the same when a session is resumed; its process and messaging socket change. So they are never stored, they are looked up.
+
+- Own session id: `echo "$CLAUDE_CODE_SESSION_ID"`.
+- Look up a session id (is it alive, where to ping it). Claude Code keeps one compact JSON file per running session in `~/.claude/sessions/`, starting `{"pid":<n>,"sessionId":"<id>"`; checked on Claude Code 2.1.310, relying only on `pid`, `sessionId` and `messagingSocketPath`:
+  1. `grep -l '^{"pid":[0-9]*,"sessionId":"<id>"' "${DROID_SESSIONS_DIR:-$HOME/.claude/sessions}"/*.json`. Run it exactly as written, with the variable: never replace it with the default path. It matches only the top-level id, not nested ones. No file → asleep.
+  2. Several files can match (a stale one left by a crashed process). For each: `grep -o '"pid":[0-9]*' <file> | head -1` and `ps -p <pid>`.
+  3. The session is alive if any matching file's pid passes `ps -p`. Its ping address is `uds:<messagingSocketPath>` from that file (`grep -o '"messagingSocketPath":"[^"]*"' <file>`). None alive → asleep.
+- A ping that fails (SendMessage returns an error) means asleep too.
+- This lookup is the only place that depends on Claude Code internals. `DROID_SESSIONS_DIR` is set only by tests; that is why the command must keep it.
 - Which droid this session is: the droid whose `session.ini` has `session=` equal to the own session id. Find it with Grep over `<droids-dir>/*/session.ini`.
 - Inbox count: `ls <droids-dir>/<name>/inbox`.
 
 ## Session
 
-- `/droid-load <name>` writes `session.ini` with the current session id, pid and messaging socket. The last load wins.
-- A resumed session gets a new pid and socket. Run `/droid-load` again in it if pings stop arriving.
+- `/droid-load <name>` writes `session.ini` with the current session id. The last load wins.
+- A resumed session keeps its id, so it stays loaded. Pings find its new socket through the lookup.
 - Skills that write into a droid (`droid-work`, `droid-save`, `droid-lint`) first check that this
   session is the droid (its `session.ini` has `session=` equal to the own session id). If not, they stop and ask for `/droid-load`.
 - No ownership, no locks. Two people working on one droid is a team communication matter, solved
@@ -70,23 +75,23 @@ socket=/tmp/cc-socks/43440.sock
 - A message is always a file: `inbox/YYYYMMDD-HHMM.<slug>.md`, first lines `From: <droid or person>` and `To: <droid>`, then the body.
 - The inbox is unordered. The droid picks what matters most, like a person reading mail. Its own tasks go to its inbox too.
 - Two ways to deliver, both always write the inbox file:
-  - `/droid-send` delivers now: if the recipient's session is alive, it gets a ping to `uds:<socket>` ("New message in inbox: <path>"); if it is asleep, it is woken in the background. The ping carries no content, so a lost ping loses nothing.
+  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, it is woken in the background. The ping carries no content, so a lost ping loses nothing.
   - `/droid-queue` only queues: the file waits until the droid works next time. No ping, no wake.
 - Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
 - A reply contains the question and the answer, so it makes sense on its own. Several replies are fine ("started", "done, result here").
 - The inbox holds work that is not finished, not only mail that came in. A processed message is deleted. What it changed lives in the wiki.
 - An answer that cannot be delivered is not finished. When the sender is a session that is gone, the droid appends `Undelivered:` and the answer to the inbox file and keeps it. `/droid-tasks` and `/droid-status` show it. Whoever reads the answer deletes the file, or asks the droid to.
-- A message from a plain session (not a droid) carries `Reply-To: uds:<socket>`: a session has no inbox, so this is where answers and questions go.
+- A message from a plain session (not a droid) carries `Reply-To: session:<id>`: a session has no inbox, so this is where answers and questions go. Resolve it with the lookup in "Session file" when you answer, not before.
 
 ## Questions
 
 A droid asks whoever sent the message. The sender knows why the task exists.
 
 - Sender is a droid → `/droid-send <sender> "<question with enough context>"`: the sender is waiting.
-- Sender is a session with `Reply-To` → SendMessage to that address with the question text. This is the only ping that carries content, because a session has no inbox.
+- Sender is a session with `Reply-To: session:<id>` → look it up ("Session file") and SendMessage to its ping address with the question text. This is the only ping that carries content, because a session has no inbox.
 - Task given in this droid's own interactive session → ask on screen.
-- None of these works (no `Reply-To`, dead socket) → ask on screen when interactive, otherwise leave the question in the file.
+- None of these works (no `Reply-To`, the session is not alive) → ask on screen when interactive, otherwise leave the question in the file.
 
 In every case append `Waiting for: <question>` to the original inbox file and move on to the next item. When the answer arrives as a new message, resume the task, then delete both files.
 

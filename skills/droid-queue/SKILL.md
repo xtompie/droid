@@ -14,10 +14,10 @@ Paths are relative to the project root (`git rev-parse --show-toplevel`); write 
    ```
    From: <sender>
    To: <to>
-   Reply-To: uds:<socket>
+   Reply-To: session:<id>
 
    <message>
    ```
-   `Reply-To` only when the sender is not a droid (a plain session has no inbox): the socket is `echo "$CLAUDE_CODE_MESSAGING_SOCKET"`. A droid sender leaves the line out; its inbox is the address.
+   `Reply-To` only when the sender is not a droid (a plain session has no inbox): the id is `echo "$CLAUDE_CODE_SESSION_ID"`. A droid sender leaves the line out; its inbox is the address.
 6. Nothing else: no ping, no wake, even if the droid is running. It reads the message next time it works (`/droid-work`, `/droid-load`) or when someone delivers a message with `/droid-send`.
 7. Report in one line: the path, and that it waits in the inbox.
