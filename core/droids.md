@@ -75,7 +75,8 @@ socket=/tmp/cc-socks/43440.sock
 - Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
 - A reply contains the question and the answer, so it makes sense on its own. Several replies are fine ("started", "done, result here").
-- A processed message is deleted. What it changed lives in the wiki.
+- The inbox holds work that is not finished, not only mail that came in. A processed message is deleted. What it changed lives in the wiki.
+- An answer that cannot be delivered is not finished. When the sender is a session that is gone, the droid appends `Undelivered:` and the answer to the inbox file and keeps it. `/droid-tasks` and `/droid-status` show it. Whoever reads the answer deletes the file, or asks the droid to.
 - A message from a plain session (not a droid) carries `Reply-To: uds:<socket>`: a session has no inbox, so this is where answers and questions go.
 
 ## Questions
