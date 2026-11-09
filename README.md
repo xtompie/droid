@@ -75,14 +75,14 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 - **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
 - **Need it now? Send it:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. A running droid gets a ping. A sleeping one gets the message in its inbox, and you get the command to start it.
 - **Leave it a task for later:** `/droid-queue security "Review the cookie flags"`. It lands in the inbox and waits until the droid works next time.
-- **Start a sleeping droid:** `claude "/droid-wake security"` in a new terminal. It loads the droid and works through its inbox.
+- **Start a sleeping droid:** `claude "/droid-wake security .ai/droids/security/inbox/<file>"` in a new terminal. It loads the droid and works through its inbox, that message first. `/droid-send` prints this command for you.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
 
 ## How droids get messages
 
 ![Send now or queue for later. Queue waits in the inbox. Send pings a running droid. A sleeping one gets the message in its inbox.](assets/messaging.svg)
 
-Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also pings the droid. A droid loaded in a session reads it between steps. A sleeping droid gets the message in its inbox, and you get the command to start it: `claude "/droid-wake security"`. It loads the droid and works through what waits in its inbox.
+Both commands write the message to the droid's inbox. `/droid-queue` stops there: the droid reads it next time it works, even if it is running right now. `/droid-send` also pings the droid. A droid loaded in a session reads it between steps. A sleeping droid gets the message in its inbox, and you get the command to start it with that message first: `claude "/droid-wake security <inbox file>"`.
 
 ## Skills
 
@@ -92,7 +92,7 @@ Both commands write the message to the droid's inbox. `/droid-queue` stops there
 | `/droid-clone <source> [name] [how it differs]` | new droid with the same role and wiki |
 | `/droid-status` | all droids: tasks, session, description |
 | `/droid-load <name>` | load a droid into this session |
-| `/droid-wake <name>` | load a droid and work through its inbox; how you start a sleeping droid |
+| `/droid-wake <name> [inbox file]` | load a droid and work through its inbox, the given message first; how you start a sleeping droid |
 | `/droid-tasks [name]` | list its inbox |
 | `/droid-work [name]` | work through the inbox |
 | `/droid-send <to> <message>` | send now: a running droid gets a ping; a sleeping one gets it in its inbox and you get the command to start it |

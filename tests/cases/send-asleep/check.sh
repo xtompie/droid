@@ -9,5 +9,6 @@ grep -qi 'rate limit' $i/$f || { echo "question missing"; exit 1; }
 grep -q '^Reply-To: session:' $i/$f || { echo "no Reply-To from a plain session"; exit 1; }
 started=$(perl -MJSON::PP -ne 'my $j = eval { decode_json($_) } or next; for my $c (@{ $j->{message}{content} // [] }) { next unless ref $c eq "HASH" && ($c->{type} // "") eq "tool_use" && ($c->{name} // "") eq "Bash"; print "x" if ($c->{input}{command} // "") =~ /nohup|claude -p|--bg/ }' "$3")
 [ -z "$started" ] || { echo "tried to start a claude process"; exit 1; }
-grep -q 'claude "/dt-wake security"' "$2" || { echo "answer lacks the start command"; exit 1; }
+grep -Fq "claude \"/dt-wake security .ai/droids/security/inbox/$f\"" "$2" || { echo "answer lacks the start command with the inbox file"; exit 1; }
+grep -qi 'blo[ck]' "$2" && { echo "answer calls it a block"; exit 1; }
 exit 0

@@ -21,4 +21,16 @@ Paths are relative to the project root (`git rev-parse --show-toplevel`); write 
    `Reply-To` only when the sender is not a droid (a plain session has no inbox): the id is `${CLAUDE_SESSION_ID}`. A droid sender leaves the line out; its inbox is the address.
 6. Read `session=` from `.ai/droids/<to>/session.ini` if it exists. That is the recipient droid's session id, not yours. Look up that id (`.ai/droids/droids.md` → "Session file"). Alive: send one SendMessage to its ping address with only "New message in inbox: <path>". Never put the content in the ping.
 7. No `session.ini`, the lookup says asleep, or the ping failed: the droid is asleep. Start nothing. The message waits in its inbox.
-8. Report in one line: the path, and whether the droid was pinged. If it is asleep, say so and give the exact command to start it in a new terminal: `claude "/droid-wake <to>"`.
+8. Report in the user's language, plainly, one thing per line. Use the path relative to the project root.
+   - Pinged:
+     ```
+     Message sent to <to>: <path>
+     ```
+   - Asleep:
+     ```
+     <to> is asleep, so it cannot be reached now.
+     The message is saved in its inbox: <path>
+     To have it handled now, run in a new terminal:
+     claude "/droid-wake <to> <path>"
+     ```
+   This is a normal outcome, not an error. Do not call it a block or a failure.

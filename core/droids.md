@@ -75,7 +75,7 @@ Only the session id. It stays the same when a session is resumed; its process an
 - A message is always a file: `inbox/YYYYMMDD-HHMM.<slug>.md`, first lines `From: <droid or person>` and `To: <droid>`, then the body.
 - The inbox is unordered. The droid picks what matters most, like a person reading mail. Its own tasks go to its inbox too.
 - Two ways to deliver, both always write the inbox file:
-  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, nothing starts: the message waits in its inbox and the sender gets the command to start it (`claude "/droid-wake <name>"`). The ping carries no content, so a lost ping loses nothing.
+  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, nothing starts: the message waits in its inbox and the sender gets the command to start it with this message first (`claude "/droid-wake <name> <inbox file>"`). The ping carries no content, so a lost ping loses nothing.
   - `/droid-queue` only queues: the file waits until the droid works next time. No ping.
 - Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.
@@ -156,7 +156,7 @@ Then update `index.md`. If the change alters how a task is done, update its proc
 | `/droid-clone <source> [name] [how it differs]` | new droid from another: same role and wiki, fresh inbox |
 | `/droid-status` | all droids: tasks, session, description |
 | `/droid-load <name>` | load a droid into this session; also when pings stop arriving |
-| `/droid-wake <name>` | load a droid into this session and work through its inbox; the command a sleeping droid is started with |
+| `/droid-wake <name> [inbox file]` | load a droid into this session and work through its inbox, the given message first; the command a sleeping droid is started with |
 | `/droid-tasks [name]` | list the inbox, change nothing |
 | `/droid-work [name]` | work through the inbox |
 | `/droid-send <to> <message>` | deliver now: ping if alive; if asleep it waits in the inbox and you get the command to start the droid |
