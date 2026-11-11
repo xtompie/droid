@@ -24,6 +24,7 @@ Let `<dir>` be the droids folder and `<prefix>` the name prefix.
 ```bash
 mkdir -p <dir>
 cp /tmp/droid-install/core/droids.md <dir>/droids.md
+cp /tmp/droid-install/core/VERSION <dir>/VERSION
 cp -R /tmp/droid-install/skills/droid-* <skills-dir>/
 ```
 
@@ -42,7 +43,7 @@ cp -R /tmp/droid-install/skills/droid-* <skills-dir>/
 ls <dir>
 ```
 
-It should show only `droids.md`. Remove `/tmp/droid-install`.
+It should show only `droids.md` and `VERSION`. Remove `/tmp/droid-install`.
 
 ## 6. Explain
 
@@ -58,8 +59,8 @@ Ask whether to commit the installed files. Never push without being asked.
 
 When Droid is already installed (`<dir>/droids.md` exists):
 
-1. Read the installed version from the line `Droid <version>.` at the top of `<dir>/droids.md`. No such line: it is 0.6.0 or older, so do every "Upgrade" step below; they are safe to repeat.
+1. Read the installed version from `<dir>/VERSION`. No such file: it is 0.6.0 or older, so do every "Upgrade" step below; they are safe to repeat.
 2. Get the files (step 1) and read `CHANGELOG.md`. Take every version newer than the installed one.
-3. Copy `core/droids.md` and the skills again, as in step 3, with the same `<dir>` and `<prefix>` as before. Find them from the installed files: the folder that holds `droids.md` and the prefix of the installed skill folders. Remove installed skills that the repo no longer has.
+3. Copy `core/droids.md`, `core/VERSION` and the skills again, as in step 3, with the same `<dir>` and `<prefix>` as before. Find them from the installed files: the folder that holds `droids.md` and the prefix of the installed skill folders. Remove installed skills that the repo no longer has.
 4. Do the "Upgrade" steps of each newer version, oldest first.
 5. Tell the user what changed, in a few lines, from the changelog. Ask whether to commit. Never push without being asked.

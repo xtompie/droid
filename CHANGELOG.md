@@ -1,6 +1,6 @@
 # Changelog
 
-Every installed project has its version in the first lines of `<droids dir>/droids.md`. To upgrade, see "Upgrading" in `INSTALL.md`.
+Every installed project has its version in `<droids dir>/VERSION`. To upgrade, see "Upgrading" in `INSTALL.md`.
 
 ## 0.7.0
 
@@ -10,7 +10,7 @@ Every installed project has its version in the first lines of `<droids dir>/droi
 - Skills take the session id from Claude Code (`${CLAUDE_SESSION_ID}`) and leave permissions to the user.
 - Requires Claude Code 2.1.310 or newer.
 
-Upgrade: install the new `droid-wake` skill.
+Upgrade: install the new `droid-wake` skill. Add `<droids dir>/VERSION`.
 
 ## 0.6.0
 

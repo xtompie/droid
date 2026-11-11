@@ -1,7 +1,5 @@
 # Droids
 
-Droid 0.7.0. What changed in each version: `CHANGELOG.md` in https://github.com/xtompie/droid
-
 A droid is a persistent worker for one topic. Instead of making sure every session loads the right
 documents, you set up a droid that looks after its own context: it keeps its knowledge, decisions
 and notes with itself, as a small wiki. It does not expose them to others. Other sessions do not

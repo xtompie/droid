@@ -62,6 +62,7 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 ```text
 .ai/droids/
   droids.md          rules for all droids
+  VERSION            installed Droid version
   security/          a droid you created, for example
     droid.ini        name, description, created
     droid.md         who it is and what it is responsible for
