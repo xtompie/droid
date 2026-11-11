@@ -53,3 +53,13 @@ Tell the user briefly:
 - Other sessions hand work over in two ways: `/<prefix>-send` pings a running droid; a sleeping one gets the message in its inbox, and you get the command to start it. `/<prefix>-queue` leaves it in the inbox for later.
 
 Ask whether to commit the installed files. Never push without being asked.
+
+## Upgrading
+
+When Droid is already installed (`<dir>/droids.md` exists):
+
+1. Read the installed version from the line `Droid <version>.` at the top of `<dir>/droids.md`. No such line: it is 0.6.0 or older, so do every "Upgrade" step below; they are safe to repeat.
+2. Get the files (step 1) and read `CHANGELOG.md`. Take every version newer than the installed one.
+3. Copy `core/droids.md` and the skills again, as in step 3, with the same `<dir>` and `<prefix>` as before. Find them from the installed files: the folder that holds `droids.md` and the prefix of the installed skill folders. Remove installed skills that the repo no longer has.
+4. Do the "Upgrade" steps of each newer version, oldest first.
+5. Tell the user what changed, in a few lines, from the changelog. Ask whether to commit. Never push without being asked.

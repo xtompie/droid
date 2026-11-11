@@ -113,6 +113,8 @@ Install Droid from https://github.com/xtompie/droid. Follow INSTALL.md from that
 
 The agent asks where to keep droids, whether to install the skills for this project or for your user, and what to call them. Install them in the project: anyone who clones the repo gets the skills, and the droids folder makes sense to them.
 
+To upgrade later, paste the same line with "Upgrade" instead of "Install". The agent reads the installed version and applies what changed since, from `CHANGELOG.md`.
+
 Want the model to see every droid skill, not only send and queue? Copy the skills to `~/.claude/skills/` and remove the `disable-model-invocation` line. Your copy wins over the project one, only for you. It does not update with the repo, so copy it again after an update.
 
 Requirements: Claude Code 2.1.310 or newer, macOS or Linux, `git`.
