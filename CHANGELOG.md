@@ -2,6 +2,10 @@
 
 Every installed project has its version in `<droids dir>/VERSION`. To upgrade, see "Upgrading" in `INSTALL.md`.
 
+## 0.8.0
+
+- A sleeping droid is started in its last session: `/droid-send` gives `claude --resume <id> "/droid-wake <name> <inbox file>"`, so the droid gets its conversation back. If Claude Code finds no such conversation, the second command starts a new session.
+
 ## 0.7.0
 
 - `/droid-send` no longer wakes a sleeping droid in the background. The message waits in its inbox, and the sender gets the command to start it: `claude "/droid-wake <name> <inbox file>"`, said plainly, one thing per line.

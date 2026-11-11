@@ -75,7 +75,7 @@ Only the session id. It stays the same when a session is resumed; its process an
 - A message is always a file: `inbox/YYYYMMDD-HHMM.<slug>.md`, first lines `From: <droid or person>` and `To: <droid>`, then the body.
 - The inbox is unordered. The droid picks what matters most, like a person reading mail. Its own tasks go to its inbox too.
 - Two ways to deliver, both always write the inbox file:
-  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, nothing starts: the message waits in its inbox and the sender gets the command to start it with this message first (`claude "/droid-wake <name> <inbox file>"`). The ping carries no content, so a lost ping loses nothing.
+  - `/droid-send` delivers now: if the recipient's session is alive (lookup in "Session file"), it gets a ping to its socket ("New message in inbox: <path>"); if it is asleep, nothing starts: the message waits in its inbox and the sender gets the command to start it with this message first: `claude --resume <its last session id> "/droid-wake <name> <inbox file>"`, which brings back its conversation, or `claude "/droid-wake <name> <inbox file>"` when there is no such conversation. The ping carries no content, so a lost ping loses nothing.
   - `/droid-queue` only queues: the file waits until the droid works next time. No ping.
 - Answers and questions to a sender who waits go by `/droid-send`.
 - A droid that gets a ping finishes its current step, then takes the inbox. Urgency is stated in the message body.

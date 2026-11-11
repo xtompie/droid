@@ -76,7 +76,7 @@ There is no owner, no lock, no log and no state file. Continuity is the wiki and
 - **Load a droid into a session:** `/droid-load security`. A session is the base layer. A droid is loaded on purpose.
 - **Need it now? Send it:** `/droid-send security "Does the new upload endpoint need rate limiting?"`. A running droid gets a ping. A sleeping one gets the message in its inbox, and you get the command to start it.
 - **Leave it a task for later:** `/droid-queue security "Review the cookie flags"`. It lands in the inbox and waits until the droid works next time.
-- **Start a sleeping droid:** `claude "/droid-wake security .ai/droids/security/inbox/<file>"` in a new terminal. It loads the droid and works through its inbox, that message first. `/droid-send` prints this command for you.
+- **Start a sleeping droid:** `claude "/droid-wake security .ai/droids/security/inbox/<file>"` in a new terminal. It loads the droid and works through its inbox, that message first. `/droid-send` prints this command for you. When the droid has a last session, the command resumes it with `claude --resume <id>`, so the droid gets its conversation back, not only its wiki.
 - **Let it work:** `/droid-work`. It takes inbox items one by one, replies, and folds what it learned into its wiki.
 
 ## How droids get messages
